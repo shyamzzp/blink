@@ -243,7 +243,24 @@ class KeyShortcut: ObservableObject, Codable, Identifiable {
       KeyShortcut(.toggleQuickActions, [.command, .shift], "k"),
       // iTerm2 keeps these in its context menu rather than on a key.
       KeyShortcut(.selectionGoogle, [.command, .shift], "g"),
+      KeyShortcut(.selectionStackOverflow, [.command, .alternate, .shift], "g"),
       KeyShortcut(.selectionShare, [.command, .alternate, .shift], "s"),
+
+      // Jump to the final tab, matching iTerm2's Command-9 semantics now
+      // that Command-9 itself selects the ninth tab.
+      KeyShortcut(.tabLast, .command, "0"),
+
+      // Dismiss the software keyboard without detaching the hardware one.
+      KeyShortcut(.hideKeyboard, [.command, .alternate], "h"),
+
+      // On-screen keystroke visualiser, for screen recording and for
+      // debugging your own key remaps.
+      KeyShortcut(.toggleKeyCast, [.command, .alternate], "k"),
+
+      // Background location tracking, which is how Blink keeps a session
+      // alive while the app is backgrounded. Bound for discoverability; it
+      // costs battery, so turn it off when you are done.
+      KeyShortcut(.toggleGeoTrack, [.command, .alternate], "g"),
 
       Self.snippetsShowShortcut,
       Self.scratchShowShortcut
