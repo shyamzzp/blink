@@ -1,5 +1,8 @@
 # Sideloading this fork with a free Apple Developer account
 
+> For what this fork changes beyond sideloading, see
+> [FORK_CHANGES.md](FORK_CHANGES.md).
+
 Upstream Blink is built for a paid Apple Developer Program account. A free
 "Personal Team" cannot sign several of the capabilities upstream depends on, so
 this fork carries the minimum set of changes needed to build, install and run on
@@ -60,6 +63,7 @@ per 7 days, 100 devices per year.
 | `BlinkFileProviderExtension/…entitlements` | Same, for the extension. |
 | `Blink.xcodeproj/project.pbxproj` | Unlinked `StoreKit.framework` and disabled the Push, iCloud, Keychain and DataProtection system capabilities. Linking StoreKit makes Xcode request the In-App Purchase service on the App ID, which a Personal Team is refused. |
 | `BlinkConfig/BlinkPaths.m` | `groupContainerPath` falls back to the app's own container when there is no app group. Blink keeps its entire home directory there, so without this nothing resolves. `iCloudDriveDocuments` returns nil instead of building a path from a nil ubiquity container, and `linkICloudDriveIfNeeded` skips the symlink when it does. |
+| `Blink/VoiceInput.swift`, `Blink/Terminal/TermView.*` | Push-to-talk voice input, unrelated to signing. See [FORK_CHANGES.md](FORK_CHANGES.md). |
 | `Blink/Migrator/1810Migration.swift` | Skipped `deleteFileProviderStorage()`. `NSFileProviderManager.default.documentStorageURL` raises an Objective-C assertion when no File Provider is provisioned, and that cannot be caught from Swift. Also skipped the iCloud reachability sync beside it. |
 
 ## What you lose
