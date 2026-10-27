@@ -117,6 +117,10 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
 
   _coverView.frame = self.bounds;
   [self bringSubviewToFront:_coverView];
+
+  if (_overlayView.superview == self) {
+    [self bringSubviewToFront:_overlayView];
+  }
 }
 
 

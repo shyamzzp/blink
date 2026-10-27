@@ -83,6 +83,10 @@ extern NSString * TermViewBrowserReadyNotificationKey;
 @property (nonatomic, readonly) SmarterTermInput *webView;
 @property (nonatomic, readonly) SmarterTermInput *browserView;
 @property (nonatomic, weak) id termController;
+/// Kept above every other subview on each layout pass. The web view is
+/// re-added to this view when the terminal finishes loading, which would
+/// otherwise bury anything placed on top of it.
+@property (nonatomic, weak) UIView *overlayView;
 @property (nonatomic, readonly) NSInteger rows;
 @property (nonatomic, readonly) NSInteger cols;
 

@@ -158,6 +158,7 @@ class TermController: UIViewController {
   private var _termView = TermView(frame: .zero, termUIState: TermUIState.withDefaults())
   private var _proxyView = ProxyView(frame: .zero)
   private var _sceneRole: UISceneSession.Role? = nil
+  private let _micButton = MicButton()
   private var _bgColor: UIColor? = nil
   private var _fontSizeBeforeScaling: Int? = nil
 
@@ -255,6 +256,36 @@ class TermController: UIViewController {
       _termView.termUIState.fontSize = BLKDefaults.selectedExternalDisplayFontSize()?.intValue ?? 24
     }
     _termView.load()
+    _setupMicButton()
+  }
+
+  private func _setupMicButton() {
+    // External displays are not interactive, and the button would just sit
+    // there unusable.
+    guard _sceneRole != .windowExternalDisplayNonInteractive else {
+      return
+    }
+
+    _termView.addSubview(_micButton)
+    // TermView overrides safeAreaInsets to zero, so its safe area guide is not
+    // usable here. Ride the keyboard guide instead: when no keyboard is up its
+    // top edge is the bottom of the view, which is exactly where we want to be.
+    NSLayoutConstraint.activate([
+      _micButton.trailingAnchor.constraint(
+        equalTo: _termView.trailingAnchor, constant: -16),
+      _micButton.bottomAnchor.constraint(
+        equalTo: _termView.keyboardLayoutGuide.topAnchor, constant: -16),
+    ])
+
+    // The web view is re-added to TermView once the terminal finishes loading,
+    // which would otherwise cover the button.
+    _termView.overlayView = _micButton
+
+    _micButton.onInsert = { [weak self] text in
+      // No trailing newline on purpose. A misheard command should wait on the
+      // prompt to be read, not run itself.
+      self?._termDevice.write(text)
+    }
   }
 
   public override func viewWillLayoutSubviews() {
