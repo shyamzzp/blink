@@ -1,0 +1,57 @@
+# Example ~/.ssh/config for Blink on an iPad.
+#
+# Blink writes its own ~/.blink/ssh_config which begins with
+#   Include ssh_config
+#   Include ../.ssh/config
+# so a desktop config dropped at ~/.ssh/config inside the Blink sandbox is
+# picked up almost unchanged. Blink also sets ControlMaster auto, Compression
+# yes and SendEnv LANG for Host * globally.
+#
+# The point of this file is the RemoteCommand lines. Making every connection
+# land inside tmux is what turns a dropped wifi connection, a closed lid or a
+# quit app from a lost session into a non-event.
+
+# --- A host you work on, landing straight in tmux ---------------------
+Host dev
+    HostName dev.example.com
+    User you
+    # Attach to a session named after the host, creating it if needed.
+    # -A means attach-or-create, so this is safe on a fresh machine.
+    RemoteCommand tmux new -A -s main
+    RequestTTY yes
+
+# --- Same host, but reachable only through a bastion ------------------
+Host internal
+    HostName 10.0.4.17
+    User you
+    ProxyJump bastion.example.com
+    RemoteCommand tmux new -A -s main
+    RequestTTY yes
+
+# --- A bastion you only ever pass through -----------------------------
+Host bastion.example.com
+    User you
+    # No RemoteCommand: you are not working here, only transiting.
+
+# --- Local machine on the LAN -----------------------------------------
+Host mac
+    HostName 192.168.1.10
+    User you
+    RemoteCommand tmux new -A -s main
+    RequestTTY yes
+
+# --- Port forwarding examples -----------------------------------------
+# Browse a remote-only web app from Safari on the iPad:
+#   ssh -L 8080:localhost:8080 dev
+# A SOCKS proxy for everything:
+#   ssh -D 1080 -N dev
+# Expose something running on the iPad to the remote host:
+#   ssh -R 9000:localhost:9000 dev
+
+# --- Defaults ---------------------------------------------------------
+Host *
+    # Keep a dropped link from hanging the terminal for minutes.
+    ServerAliveInterval 30
+    ServerAliveCountMax 3
+    # Agent forwarding only where you trust the far end. Prefer ProxyJump.
+    ForwardAgent no
