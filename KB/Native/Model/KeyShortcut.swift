@@ -247,6 +247,68 @@ class KeyShortcut: ObservableObject, Codable, Identifiable {
 
       Self.snippetsShowShortcut,
       Self.scratchShowShortcut
+    ] + tmuxDefaultList
+  }
+
+  /// iTerm2 muscle memory mapped onto tmux.
+  ///
+  /// Blink has no split panes at any level, no scrollback search, no
+  /// broadcast input and no session persistence. tmux on the remote host
+  /// supplies all of them, and a tmux command is just the prefix byte
+  /// followed by a key. Sending those bytes directly is what makes the
+  /// result feel like iTerm2 rather than like tmux.
+  ///
+  /// Prefix bytes assume the default tmux prefix of Control-b, which is
+  /// `0x02`. On a Control-a prefix, replace every leading `02` with `01`.
+  ///
+  /// These fire whether or not a tmux session is attached. Outside tmux,
+  /// `0225` simply types `%` at the prompt.
+  static var tmuxDefaultList: [KeyShortcut] {
+    func hex(_ bytes: String, _ comment: String,
+             _ modifiers: UIKeyModifierFlags, _ input: String) -> KeyShortcut {
+      KeyShortcut(action: .hex(bytes, stringInput: nil, comment: "tmux: " + comment),
+                  modifiers: modifiers,
+                  input: input)
+    }
+
+    return [
+      // Splits. The single biggest gap: Blink has no panes of its own.
+      hex("0225", "split side by side",     [.command], "d"),
+      hex("0222", "split stacked",          [.command, .shift], "d"),
+
+      // Pane focus. May be intercepted by Stage Manager on some iPadOS
+      // versions; the tmux config also binds Alt-arrow without a prefix as
+      // a fallback.
+      hex("021B5B44", "focus pane left",    [.command, .alternate], UIKeyCommand.inputLeftArrow),
+      hex("021B5B43", "focus pane right",   [.command, .alternate], UIKeyCommand.inputRightArrow),
+      hex("021B5B41", "focus pane up",      [.command, .alternate], UIKeyCommand.inputUpArrow),
+      hex("021B5B42", "focus pane down",    [.command, .alternate], UIKeyCommand.inputDownArrow),
+
+      hex("027A", "zoom or unzoom pane",    [.command, .shift], "\r"),
+      hex("0278", "kill pane",              [.command, .alternate], "w"),
+
+      // Scrollback search, the most missed iTerm2 feature. Enters copy mode
+      // and starts a search: prefix, [, then /.
+      hex("025B2F", "search scrollback",    [.command], "f"),
+
+      // Clear screen and wipe scrollback, via the bind C-k line in the
+      // shipped tmux config.
+      hex("020B", "clear screen and scrollback", [.command], "k"),
+
+      // Broadcast input to all panes, via the bind I line.
+      hex("0249", "broadcast input to all panes", [.command, .alternate], "i"),
+
+      // tmux windows, distinct from Blink tabs.
+      hex("0263", "new tmux window",        [.command, .alternate], "t"),
+      hex("026E", "next tmux window",       [.command, .alternate], "]"),
+      hex("0270", "previous tmux window",   [.command, .alternate], "["),
+
+      hex("0273", "session chooser",        [.command, .alternate], "s"),
+      hex("0264", "detach from session",    [.command, .alternate], "d"),
+
+      // Paste buffers, which is tmux's answer to iTerm2's paste history.
+      hex("0223", "list paste buffers",     [.command, .shift], "h"),
+      hex("025D", "paste the tmux buffer",  [.command, .alternate], "v"),
     ]
   }
 }
