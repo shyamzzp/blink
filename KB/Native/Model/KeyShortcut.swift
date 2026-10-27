@@ -199,15 +199,32 @@ class KeyShortcut: ObservableObject, Codable, Identifiable {
       KeyShortcut(.clipboardPaste, .command, "v"),
 
       KeyShortcut(.windowNew, [.command, .shift], "t"),
+      // iTerm2 opens a window with Command-N. Both reach the same command.
+      KeyShortcut(.windowNew, .command, "n"),
       KeyShortcut(.windowClose, [.command, .shift], "w"),
       KeyShortcut(.windowFocusOther, [.command], "o"),
 
       KeyShortcut(.tabNew, .command, "t"),
       KeyShortcut(.tabClose, .command, "w"),
-      KeyShortcut(.tabNext, [.command, .shift], "]"),
-      KeyShortcut(.tabNext, [.command, .shift], UIKeyCommand.inputRightArrow),
-      KeyShortcut(.tabPrev, [.command, .shift], "["),
-      KeyShortcut(.tabPrev, [.command, .shift], UIKeyCommand.inputLeftArrow),
+      // Cycling variants, so the ends of the tab strip wrap around the way
+      // iTerm2 does rather than stopping.
+      KeyShortcut(.tabNextCycling, [.command, .shift], "]"),
+      KeyShortcut(.tabNextCycling, [.command, .shift], UIKeyCommand.inputRightArrow),
+      KeyShortcut(.tabPrevCycling, [.command, .shift], "["),
+      KeyShortcut(.tabPrevCycling, [.command, .shift], UIKeyCommand.inputLeftArrow),
+
+      // Jump straight to a tab, as iTerm2 does. This needs the functional
+      // keys moved off Command, which is the default since the modifier
+      // layout change.
+      KeyShortcut(.tab1, .command, "1"),
+      KeyShortcut(.tab2, .command, "2"),
+      KeyShortcut(.tab3, .command, "3"),
+      KeyShortcut(.tab4, .command, "4"),
+      KeyShortcut(.tab5, .command, "5"),
+      KeyShortcut(.tab6, .command, "6"),
+      KeyShortcut(.tab7, .command, "7"),
+      KeyShortcut(.tab8, .command, "8"),
+      KeyShortcut(.tab9, .command, "9"),
 
       KeyShortcut(.tabMoveToOtherWindow, [.command, .shift], "o"),
 
@@ -216,6 +233,13 @@ class KeyShortcut: ObservableObject, Codable, Identifiable {
       KeyShortcut(.zoomReset, .command, "="),
 
       KeyShortcut(.configShow, .command, ","),
+
+      // Reclaim screen rows when a hardware keyboard is attached.
+      KeyShortcut(.toggleQuickActions, [.command, .shift], "k"),
+      // iTerm2 keeps these in its context menu rather than on a key.
+      KeyShortcut(.selectionGoogle, [.command, .shift], "g"),
+      KeyShortcut(.selectionShare, [.command, .alternate, .shift], "s"),
+
       Self.snippetsShowShortcut,
       Self.scratchShowShortcut
     ]
