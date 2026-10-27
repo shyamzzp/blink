@@ -57,3 +57,9 @@ Resources/Fonts/Pragmata*
 .swiftpm
 
 Blink.xcodeproj/project.xcworkspace/xcshareddata
+
+# Sideload build output
+build-signed/
+ipa-stage/
+ipa-lite/
+*.orig

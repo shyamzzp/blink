@@ -58,13 +58,20 @@ class MigrationFileProviderReplicatedExtension: MigrationStep {
       }
     }
 
-    // Do we need it or does it happen on its own?
-    BKiCloudSyncHandler.shared()?.check(forReachabilityAndSync: nil)
+    // Skipped on a Personal Team build: no iCloud entitlement, so the sync
+    // handler has nothing to reach.
+    // BKiCloudSyncHandler.shared()?.check(forReachabilityAndSync: nil)
 
     self.deleteFileProviderStorage()
   }
 
   private func deleteFileProviderStorage() {
+    // Skipped on a Personal Team build. `documentStorageURL` raises an
+    // Objective-C assertion when the app has no provisioned File Provider,
+    // and an ObjC exception cannot be caught from Swift, so there is nothing
+    // to guard against. A fresh install has no old storage to clean up.
+    return
+
     // Clean up the old File Provider path
     let fileProviderURL = NSFileProviderManager.default.documentStorageURL
 

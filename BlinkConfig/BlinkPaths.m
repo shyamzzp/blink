@@ -71,6 +71,16 @@ NSString *__iCloudsDriveDocumentsPath = nil;
 
     NSFileManager *fm = [NSFileManager defaultManager];
     NSString *path = [fm containerURLForSecurityApplicationGroupIdentifier:groupID].path;
+    if (path == nil) {
+      // No app group container. A free Personal Team cannot sign the App Groups
+      // capability, so fall back to a folder inside the app's own container.
+      // Nothing is shared with the extensions, which is fine because they are
+      // not provisioned under a Personal Team either.
+      NSURL *appSupport = [[fm URLsForDirectory:NSApplicationSupportDirectory
+                                      inDomains:NSUserDomainMask] firstObject];
+      path = [appSupport URLByAppendingPathComponent:@"BlinkGroupContainer"].path;
+      [self _ensureFolderAtPath:path];
+    }
     __groupContainerPath = path;
   }
   return __groupContainerPath;
@@ -82,6 +92,11 @@ NSString *__iCloudsDriveDocumentsPath = nil;
     NSString *iCloudID = [XCConfig infoPlistFullCloudID];
     NSFileManager *fm = [NSFileManager defaultManager];
     NSString *path = [[fm URLForUbiquityContainerIdentifier:iCloudID] URLByAppendingPathComponent:@"Documents"].path;
+    if (path == nil) {
+      // No iCloud entitlement under a Personal Team. Leave this nil; callers
+      // skip the iCloud link when it is unavailable.
+      return nil;
+    }
     [self _ensureFolderAtPath:path];
     __iCloudsDriveDocumentsPath = path;
   }
@@ -91,8 +106,12 @@ NSString *__iCloudsDriveDocumentsPath = nil;
 
 + (void)linkICloudDriveIfNeeded
 {
+  NSString *destinationPath = [self iCloudDriveDocuments];
+  if (destinationPath == nil) {
+    return;
+  }
   [self _linkAtPath:[[self homePath] stringByAppendingPathComponent:@"iCloud"]
-    destinationPath:[self iCloudDriveDocuments]];
+    destinationPath:destinationPath];
 }
 
 + (void)linkDocumentsIfNeeded {
