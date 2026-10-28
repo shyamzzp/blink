@@ -133,10 +133,11 @@ class KeyConfig: ObservableObject, Codable {
     KeyConfig(code: .capsLock, up: .none, down: .none, mod: .none)
   }
 
-  /// Caps Lock as Control when held and Escape when tapped alone, the layout
-  /// desktop terminal users reach for first. An iPad keyboard has no Escape
-  /// key, so without this there is no comfortable way to leave vim insert
-  /// mode.
+  /// Caps Lock as Control when held and Escape when tapped alone.
+  ///
+  /// Not a default: it costs you Caps Lock as Caps Lock, and there is no way
+  /// to keep both. Offered as a preset for anyone who wants to opt in from
+  /// Settings > Keyboard.
   static var capsLockControlEscape: KeyConfig {
     KeyConfig(code: .capsLock, up: .escape, down: .none, mod: .control)
   }

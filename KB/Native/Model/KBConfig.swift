@@ -47,7 +47,7 @@ class KBConfig: ObservableObject, Codable {
   private var _cancellable = Set<AnyCancellable>()
   
   init(
-    capsLock:      KeyConfig     = .capsLockControlEscape,
+    capsLock:      KeyConfig     = .capsLock,
     shift:         KeyConfigPair = .shift,
     control:       KeyConfigPair = .control,
     option:        KeyConfigPair = .option,
@@ -71,7 +71,7 @@ class KBConfig: ObservableObject, Codable {
   }
   
   func reset() {
-    self.capsLock = .capsLockControlEscape
+    self.capsLock = .capsLock
     self.shift = .shift
     self.control = .control
     self.option = .option
