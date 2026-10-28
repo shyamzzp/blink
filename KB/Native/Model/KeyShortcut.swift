@@ -198,8 +198,10 @@ class KeyShortcut: ObservableObject, Codable, Identifiable {
       KeyShortcut(.clipboardCopyRaw, [.command, .shift], "c"),
       KeyShortcut(.clipboardPaste, .command, "v"),
 
-      KeyShortcut(.windowNew, [.command, .shift], "t"),
-      // iTerm2 opens a window with Command-N. Both reach the same command.
+      // iTerm2 opens a window with Command-N. Only one shortcut per action
+      // survives: KeyBindingAction.id is "cmd-<command>" with no key in it,
+      // and loadConfig drops every later duplicate. So this replaces the old
+      // Command-Shift-T rather than joining it.
       KeyShortcut(.windowNew, .command, "n"),
       KeyShortcut(.windowClose, [.command, .shift], "w"),
       KeyShortcut(.windowFocusOther, [.command], "o"),
@@ -209,9 +211,12 @@ class KeyShortcut: ObservableObject, Codable, Identifiable {
       // Cycling variants, so the ends of the tab strip wrap around the way
       // iTerm2 does rather than stopping.
       KeyShortcut(.tabNextCycling, [.command, .shift], "]"),
-      KeyShortcut(.tabNextCycling, [.command, .shift], UIKeyCommand.inputRightArrow),
       KeyShortcut(.tabPrevCycling, [.command, .shift], "["),
-      KeyShortcut(.tabPrevCycling, [.command, .shift], UIKeyCommand.inputLeftArrow),
+      // The arrow variants are deliberately left on the non-cycling actions.
+      // Binding them to the cycling ones as well would be silently discarded,
+      // because only the first shortcut per action survives loadConfig.
+      KeyShortcut(.tabNext, [.command, .shift], UIKeyCommand.inputRightArrow),
+      KeyShortcut(.tabPrev, [.command, .shift], UIKeyCommand.inputLeftArrow),
 
       // Jump straight to a tab, as iTerm2 does. This needs the functional
       // keys moved off Command, which is the default since the modifier
