@@ -52,7 +52,9 @@ class KBConfig: ObservableObject, Codable {
     control:       KeyConfigPair = .control,
     option:        KeyConfigPair = .option,
     command:       KeyConfigPair = .command,
-    fnBinding:     KeyBinding    = KeyBinding(keys: [KeyCode.commandLeft.id]),
+    // Control-Command rather than Command alone, which frees Command plus a
+    // digit for jumping straight to a tab the way iTerm2 does.
+    fnBinding:     KeyBinding    = KeyBinding(keys: [KeyCode.controlLeft.id, KeyCode.commandLeft.id]),
     cursorBinding: KeyBinding    = KeyBinding(keys: [KeyCode.commandLeft.id]),
     shortcuts:     [KeyShortcut] = KeyShortcut.defaultList
   ) {
@@ -74,7 +76,7 @@ class KBConfig: ObservableObject, Codable {
     self.control = .control
     self.option = .option
     self.command = .command
-    self.fnBinding = KeyBinding(keys: [KeyCode.commandLeft.id])
+    self.fnBinding = KeyBinding(keys: [KeyCode.controlLeft.id, KeyCode.commandLeft.id])
     self.cursorBinding = KeyBinding(keys: [KeyCode.commandLeft.id])
     self.shortcuts = KeyShortcut.defaultList
     
